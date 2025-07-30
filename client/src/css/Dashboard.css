@@ -1,147 +1,110 @@
-.dashboard-container {
+.contentWrap {
   display: flex;
-  height: 100vh;
+  height: calc(100vh - 64px);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  width: 100%;
 }
 
-/* Sidebar styles */
-.sidebar {
+/* Left column */
+.leftDis {
   width: 20%;
   background: #f3f4f6;
   padding: 16px;
   border-right: 1px solid #ccc;
+  height: 100%;
 }
 
-.sidebar-title {
-  font-size: 18px;
-  margin-top: 10px;
-  margin-bottom: 10px;
-  color: #111827;
-  font-weight: 600;
-}
-
-.agent-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  max-height: 70vh;
-  overflow-y: auto;
-}
-
-.agent-item {
-  padding: 8px;
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 6px;
-  margin-bottom: 8px;
-  font-size: 14px;
-}
-
-.empty-text {
-  color: #777;
-  font-style: italic;
-}
-
-/* Main content */
-.main-content {
-  width: 55%;
+/* Right column (center content) */
+.centerDis {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* responsive grid */
+  gap: 20px;
   padding: 20px;
-  overflow-y: auto;
+  width: 80%;
+  align-content: flex-start; /* start from top */
+  justify-items: center; /* center each card horizontally */
+  overflow-y: auto; /* allows scrolling if too many agents */
 }
 
-.upload-btn {
-  margin-top: 10px;
+.centerDis h2 {
+  grid-column: 1 / -1; /* heading spans entire row */
+  text-align: center;
 }
 
-.distribution-section {
-  margin-top: 20px;
-}
 
-.distribution-card {
-  background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 12px;
-  margin-bottom: 12px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-}
-
-.distribution-card h4 {
-  margin-bottom: 8px;
-}
-
-.distribution-card ul {
-  list-style: none;
-  padding: 0;
-}
-
-.distribution-card li {
-  padding: 4px 0;
-  border-bottom: 1px solid #f3f4f6;
-}
-
-/* Right-side user info */
-.user-info {
-  width: 25%;
-  background: #f9fafb;
-  padding: 16px;
-  border-left: 1px solid #ccc;
-}
-
-.user-info h4 {
-  margin-bottom: 8px;
-}
-
-/* Buttons */
-.btn {
-  padding: 8px 12px;
+.createpro {
+  padding: 12px 18px;
+  height: 50px;
+  width: 100%;
+  background-color: #2563eb;
+  color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
+  font-size: 16px;
   cursor: pointer;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.uploadForm {
+  display: flex;
+  flex-direction: column;
+  max-width: 300px;
+  gap: 12px;
+}
+
+.createprofrm {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.frm {
+  background: white;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+  width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.frm h2 {
+  margin-bottom: 8px;
+  font-size: 20px;
   font-weight: 600;
-  transition: background 0.2s ease;
 }
 
-.add-btn {
-  width: 100%;
-  background: #10b981;
-  color: #fff;
-  margin-bottom: 12px;
+.frm input {
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
 }
 
-.add-btn:hover {
-  background: #059669;
+.btnRow {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
 }
 
-.remove-btn {
-  background: #ef4444;
-  color: #fff;
-  margin-top: 6px;
-  width: 100%;
+.submitBtn {
+  background-color: #2563eb;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
 }
 
-.remove-btn:hover {
-  background: #dc2626;
-}
-
-.upload-btn {
-  background: #2563eb;
-  color: #fff;
-}
-
-.upload-btn:hover {
-  background: #1d4ed8;
-}
-
-/* Scrollbars */
-.agent-list::-webkit-scrollbar,
-.main-content::-webkit-scrollbar {
-  width: 6px;
-}
-
-.agent-list::-webkit-scrollbar-thumb,
-.main-content::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 6px;
+.cancelBtn {
+  background-color: #f3f4f6;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
 }

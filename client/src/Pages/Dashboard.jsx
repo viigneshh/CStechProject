@@ -1,133 +1,82 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-
 import "../css/Dashboard.css";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import AgentCard from "../components/agentcard";
 
-function Dashboard({ user }) {
-  const [agents, setAgents] = useState([]);
-  const [showAddAgent, setShowAddAgent] = useState(false);
+function Dashboard() {
   const [file, setFile] = useState(null);
-  const [distribution, setDistribution] = useState({});
+  const [showAddAgent, setShowAddAgent] = useState(false);
+  const [agentData, setAgentData] = useState({ name: "", email: "", phone: "", password: "" });
+  const [agents, setAgents] = useState([]);
+
+  const adminMail = localStorage.getItem("mail");
+
+  const fetchAgents = async () => {
+    try {
+      const res = await axios.get(`http://localhost:5000/api/agents/${adminMail}`);
+      setAgents(res.data.agents);
+    } catch (error) {
+      console.error("Error fetching agents", error);
+    }
+  };
 
   useEffect(() => {
     fetchAgents();
   }, []);
 
-  // Load all agents from server
-  const fetchAgents = async () => {
-    try {
-      const res = await axios.get("http://localhost:5000/api/agents");
-      setAgents(res.data);
-    } catch (err) {
-      console.error("Failed to fetch agents:", err);
-    }
+  const handleAgentChange = (e) => {
+    setAgentData({ ...agentData, [e.target.name]: e.target.value });
   };
 
-  // Remove agent
-  const handleRemoveAgent = async (agentId) => {
-    if (!window.confirm("Remove this agent?")) return;
+  const handleAddAgent = async (e) => {
+    e.preventDefault();
     try {
-      await axios.delete(`http://localhost:5000/api/agents/${agentId}`);
-      fetchAgents();
-    } catch (err) {
-      console.error("Failed to remove agent:", err);
-    }
-  };
-
-  // Upload file and distribute tasks
-  const handleFileUpload = async () => {
-    if (!file) return alert("Please select a file first");
-
-    const formData = new FormData();
-    formData.append("file", file);
-
-    try {
-      const res = await axios.post(
-        "http://localhost:5000/api/upload-distribute",
-        formData,
-        { headers: { "Content-Type": "multipart/form-data" } }
-      );
-      setDistribution(res.data); // server returns { agentName: [{ FirstName, Phone, Notes }, ...] }
-    } catch (err) {
-      console.error("File upload failed:", err);
-      alert("Something went wrong while uploading");
+      const res = await axios.post("http://localhost:5000/api/agents", {
+        adminMail,
+        ...agentData,
+      });
+      alert(res.data.message);
+      setAgentData({ name: "", email: "", phone: "", password: "" });
+      setShowAddAgent(false);
+      fetchAgents(); // refresh agent list
+    } catch (error) {
+      alert(error.response?.data?.message || "Error adding agent");
     }
   };
 
   return (
-    <div className="dashboard-container">
-      {/* Sidebar for agent management */}
-      <div className="sidebar">
-        <button className="btn add-btn" onClick={() => setShowAddAgent(true)}>
-          + Add Agent
-        </button>
-        <h3 className="sidebar-title">Agents</h3>
-        <ul className="agent-list">
-          {agents.length > 0 ? (
-            agents.map((agent) => (
-              <li key={agent._id} className="agent-item">
-                <strong>{agent.name}</strong>
-                <p>{agent.email}</p>
-                <p>{agent.mobile}</p>
-                <button
-                  className="btn remove-btn"
-                  onClick={() => handleRemoveAgent(agent._id)}
-                >
-                  Remove
-                </button>
-              </li>
-            ))
-          ) : (
-            <p className="empty-text">No agents added yet</p>
-          )}
-        </ul>
+    <div className="contentWrap">
+      {/* Left Sidebar */}
+      <div className="leftDis">
+        <button className="createpro" onClick={() => setShowAddAgent(true)}>+ Add Agent</button>
       </div>
 
-      {/* Main content area */}
-      <div className="main-content">
-        <h2>Upload & Distribute Lists</h2>
-        <input
-          type="file"
-          accept=".csv,.xlsx,.xls"
-          onChange={(e) => setFile(e.target.files[0])}
-        />
-        <button className="btn upload-btn" onClick={handleFileUpload}>
-          Upload & Distribute
-        </button>
-
-        {Object.keys(distribution).length > 0 && (
-          <div className="distribution-section">
-            <h3>Distributed Data</h3>
-            {Object.entries(distribution).map(([agent, tasks]) => (
-              <div key={agent} className="distribution-card">
-                <h4>{agent}</h4>
-                <ul>
-                  {tasks.map((task, index) => (
-                    <li key={index}>
-                      {task.FirstName} - {task.Phone} - {task.Notes}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
+      {/* Center Content */}
+      <div className="centerDis">
+        <h2>Agents</h2>
+        {agents.length > 0 ? (
+          agents.map((agent) => <AgentCard key={agent._id} agent={agent} />)
+        ) : (
+          <p>No agents found</p>
         )}
       </div>
 
-      {/* Right-side user info */}
-      <div className="user-info">
-        <h4>Logged In As</h4>
-        <p><strong>{user?.username}</strong></p>
-        <p>{user?.email}</p>
-      </div>
-
-      {/* Modal for adding agent
+      {/* Add Agent Modal */}
       {showAddAgent && (
-        <AddAgentModal
-          onClose={() => setShowAddAgent(false)}
-          onAgentAdded={fetchAgents}
-        />
-      )} */}
+        <div className="createprofrm">
+          <form className="frm" onSubmit={handleAddAgent}>
+            <h2>Add Agent</h2>
+            <input type="text" name="name" placeholder="Agent Name" value={agentData.name} onChange={handleAgentChange} required />
+            <input type="email" name="email" placeholder="Agent Email" value={agentData.email} onChange={handleAgentChange} required />
+            <input type="text" name="phone" placeholder="+91XXXXXXXXXX" value={agentData.phone} onChange={handleAgentChange} required />
+            <input type="password" name="password" placeholder="Password" value={agentData.password} onChange={handleAgentChange} required />
+            <div className="btnRow">
+              <button type="button" className="cancelBtn" onClick={() => setShowAddAgent(false)}>Cancel</button>
+              <button type="submit" className="submitBtn">Add Agent</button>
+            </div>
+          </form>
+        </div>
+      )}
     </div>
   );
 }

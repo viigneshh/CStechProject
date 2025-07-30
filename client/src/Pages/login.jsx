@@ -11,23 +11,23 @@ function LoginPage() {
 
 
   const handleLogin = async () => {
-    try {
-      const res = await axios.post('http://localhost:5000/auth/login', {
-        email,
-        password,
-      });
+  try {
+    const res = await axios.post('http://localhost:5000/auth/login', {
+      email,
+      password,
+    });
 
-      const { token } = res.data;
+    const { token, mail } = res.data; // ✅ include mail
 
-      // ✅ Store token separately (optional)
-      localStorage.setItem('token', token);
+    localStorage.setItem('token', token);
+    localStorage.setItem('mail', mail);
 
-      
-      navigate('/');
-    } catch (err) {
-      alert(err.response?.data?.message || 'Login failed');
-    }
-  };
+    navigate('/dashboard');
+  } catch (err) {
+    alert(err.response?.data?.message || 'Login failed');
+  }
+};
+
 
   return (
     <div className="auth-container">

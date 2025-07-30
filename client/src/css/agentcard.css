@@ -1,0 +1,19 @@
+.agent-card {
+  background: white;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  margin-bottom: 12px;
+  transition: transform 0.2s ease-in-out;
+}
+.agent-card:hover {
+  transform: scale(1.02);
+}
+.agent-card h3 {
+  margin: 0 0 6px 0;
+}
+.agent-card p {
+  margin: 4px 0;
+  font-size: 14px;
+  color: #555;
+}
