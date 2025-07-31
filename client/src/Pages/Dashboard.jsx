@@ -8,6 +8,7 @@ function Dashboard() {
   const [showAddAgent, setShowAddAgent] = useState(false);
   const [agentData, setAgentData] = useState({ name: "", email: "", phone: "", password: "" });
   const [agents, setAgents] = useState([]);
+  const [distributions, setDistributions] = useState([]); // NEW
 
   const adminMail = localStorage.getItem("mail");
 
@@ -20,8 +21,18 @@ function Dashboard() {
     }
   };
 
+  const fetchDistributions = async () => {
+    try {
+      const res = await axios.get(`http://localhost:5000/api/lists/${adminMail}`);
+      setDistributions(res.data.distributions || []);
+    } catch (error) {
+      console.error("Error fetching distributions", error);
+    }
+  };
+
   useEffect(() => {
     fetchAgents();
+    fetchDistributions();
   }, []);
 
   const handleAgentChange = (e) => {
@@ -38,10 +49,41 @@ function Dashboard() {
       alert(res.data.message);
       setAgentData({ name: "", email: "", phone: "", password: "" });
       setShowAddAgent(false);
-      fetchAgents(); // refresh agent list
+      fetchAgents();
     } catch (error) {
       alert(error.response?.data?.message || "Error adding agent");
     }
+  };
+
+  const handleFileUpload = async (e) => {
+    e.preventDefault();
+    if (!file) {
+      alert("Please select a file first");
+      return;
+    }
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("adminMail", adminMail);
+
+      const res = await axios.post("http://localhost:5000/api/upload", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      alert(res.data.message);
+      setFile(null);
+      fetchDistributions(); // refresh distribution list
+    } catch (error) {
+      console.error(error);
+      alert(error.response?.data?.message || "File upload failed");
+    }
+  };
+
+  // Group distribution items by agentId
+  const getAgentItems = (agentId) => {
+    const dist = distributions.find((d) => d.agentId._id === agentId);
+    return dist ? dist.items : [];
   };
 
   return (
@@ -53,9 +95,32 @@ function Dashboard() {
 
       {/* Center Content */}
       <div className="centerDis">
-        <h2>Agents</h2>
+        <h2>Upload & Distribute Lists</h2>
+        <form onSubmit={handleFileUpload} className="uploadForm">
+          <input type="file" onChange={(e) => setFile(e.target.files[0])} />
+          <button type="submit" className="uploadBtn">Upload</button>
+        </form>
+
+        <h2>Agents & Distributed Lists</h2>
         {agents.length > 0 ? (
-          agents.map((agent) => <AgentCard key={agent._id} agent={agent} />)
+          agents.map((agent) => (
+            <div key={agent._id} className="agentBlock">
+              <AgentCard agent={agent} />
+              <div className="distributionItems">
+                {getAgentItems(agent._id).length > 0 ? (
+                  getAgentItems(agent._id).map((item, idx) => (
+                    <div key={idx} className="distItem">
+                      <p><b>{item.firstName}</b></p>
+                      <p>{item.phone}</p>
+                      <p className="note">{item.notes}</p>
+                    </div>
+                  ))
+                ) : (
+                  <p className="noItems">No items assigned</p>
+                )}
+              </div>
+            </div>
+          ))
         ) : (
           <p>No agents found</p>
         )}

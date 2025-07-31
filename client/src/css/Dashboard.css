@@ -108,3 +108,33 @@
   border-radius: 8px;
   cursor: pointer;
 }
+.agentBlock {
+  margin-bottom: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.distributionItems {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.distItem {
+  border: 1px solid #aaa;
+  padding: 8px;
+  border-radius: 6px;
+  background: #f9f9f9;
+  width: 95%;
+}
+
+.distItem .note {
+  font-size: 0.8rem;
+  color: #555;
+}
+
+.noItems {
+  color: #999;
+}
