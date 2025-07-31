@@ -7,6 +7,7 @@ function AgentCard({ agent }) {
       <h3>{agent.name}</h3>
       <p><strong>Email:</strong> {agent.email}</p>
       <p><strong>Phone:</strong> {agent.phone}</p>
+      <p><strong>Password:</strong> {agent.password}</p>
     </div>
   );
 }

@@ -14,15 +14,14 @@ export const addAgent = async (req, res) => {
       return res.status(400).json({ message: "Agent already exists" });
     }
 
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    
 
     const agent = await Agent.create({
       adminMail,
       name,
       email,
       phone,
-      password: hashedPassword,
+      password,
     });
 
     res.status(201).json({

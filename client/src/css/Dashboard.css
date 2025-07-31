@@ -138,3 +138,46 @@
 .noItems {
   color: #999;
 }
+.agentList {
+  margin-top: 20px;
+}
+
+.agentName {
+  cursor: pointer;
+  background-color:#a8a7a7 ;
+  padding: 10px 10px;
+  border-radius: 4px;
+  margin-bottom: 5px;
+  transition: background 0.3s;
+}
+
+.agentName:hover {
+  background: #919090;
+}
+
+.agentName.active {
+  background: #007bff;
+  color: white;
+}
+.uploadBtn {
+  background: linear-gradient(135deg, #4CAF50, #2E7D32);
+  color: white;
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.3s ease, box-shadow 0.2s ease;
+}
+
+.uploadBtn:hover {
+  background: linear-gradient(135deg, #66BB6A, #388E3C);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.uploadBtn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}

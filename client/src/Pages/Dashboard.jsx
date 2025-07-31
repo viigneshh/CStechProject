@@ -8,7 +8,8 @@ function Dashboard() {
   const [showAddAgent, setShowAddAgent] = useState(false);
   const [agentData, setAgentData] = useState({ name: "", email: "", phone: "", password: "" });
   const [agents, setAgents] = useState([]);
-  const [distributions, setDistributions] = useState([]); // NEW
+  const [distributions, setDistributions] = useState([]);
+  const [selectedAgent, setSelectedAgent] = useState(null); // NEW
 
   const adminMail = localStorage.getItem("mail");
 
@@ -80,17 +81,46 @@ function Dashboard() {
     }
   };
 
-  // Group distribution items by agentId
   const getAgentItems = (agentId) => {
-    const dist = distributions.find((d) => d.agentId._id === agentId);
-    return dist ? dist.items : [];
+    const agentDists = distributions.filter((d) => d.agentId._id === agentId);
+    let items = [];
+    agentDists.forEach((dist) => {
+      items = [...items, ...dist.items];
+    });
+    return items;
   };
+
+  // handle click on agent name
+  const handleAgentClick = (agentId) => {
+    if (selectedAgent === agentId) {
+      setSelectedAgent(null); // toggle back to all
+    } else {
+      setSelectedAgent(agentId);
+    }
+  };
+
+  const displayedAgents = selectedAgent
+    ? agents.filter((agent) => agent._id === selectedAgent)
+    : agents;
 
   return (
     <div className="contentWrap">
       {/* Left Sidebar */}
       <div className="leftDis">
         <button className="createpro" onClick={() => setShowAddAgent(true)}>+ Add Agent</button>
+
+        {/* NEW: list of agent names */}
+        <div className="agentList">
+          {agents.map((agent) => (
+            <p
+              key={agent._id}
+              className={`agentName ${selectedAgent === agent._id ? "active" : ""}`}
+              onClick={() => handleAgentClick(agent._id)}
+            >
+              {agent.name}
+            </p>
+          ))}
+        </div>
       </div>
 
       {/* Center Content */}
@@ -102,8 +132,8 @@ function Dashboard() {
         </form>
 
         <h2>Agents & Distributed Lists</h2>
-        {agents.length > 0 ? (
-          agents.map((agent) => (
+        {displayedAgents.length > 0 ? (
+          displayedAgents.map((agent) => (
             <div key={agent._id} className="agentBlock">
               <AgentCard agent={agent} />
               <div className="distributionItems">
@@ -126,22 +156,55 @@ function Dashboard() {
         )}
       </div>
 
-      {/* Add Agent Modal */}
-      {showAddAgent && (
-        <div className="createprofrm">
-          <form className="frm" onSubmit={handleAddAgent}>
-            <h2>Add Agent</h2>
-            <input type="text" name="name" placeholder="Agent Name" value={agentData.name} onChange={handleAgentChange} required />
-            <input type="email" name="email" placeholder="Agent Email" value={agentData.email} onChange={handleAgentChange} required />
-            <input type="text" name="phone" placeholder="+91XXXXXXXXXX" value={agentData.phone} onChange={handleAgentChange} required />
-            <input type="password" name="password" placeholder="Password" value={agentData.password} onChange={handleAgentChange} required />
-            <div className="btnRow">
-              <button type="button" className="cancelBtn" onClick={() => setShowAddAgent(false)}>Cancel</button>
-              <button type="submit" className="submitBtn">Add Agent</button>
-            </div>
-          </form>
-        </div>
-      )}
+          {/* Add Agent Modal */}
+          {showAddAgent && (
+      <div className="createprofrm">
+        <form className="frm" onSubmit={handleAddAgent}>
+          <h2>Add Agent</h2>
+          <input 
+            type="text" 
+            name="name" 
+            placeholder="Agent Name" 
+            value={agentData.name} 
+            onChange={handleAgentChange} 
+            required 
+          />
+          <input 
+            type="email" 
+            name="email" 
+            placeholder="Agent Email" 
+            value={agentData.email} 
+            onChange={handleAgentChange} 
+            pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" 
+            title="Enter a valid email address" 
+            required 
+          />
+          <input 
+            type="tel" 
+            name="phone" 
+            placeholder="+91XXXXXXXXXX" 
+            value={agentData.phone} 
+            onChange={handleAgentChange} 
+            pattern="\+91[0-9]{10}" 
+            title="Phone must be in format +91XXXXXXXXXX" 
+            required 
+          />
+          <input 
+            type="password" 
+            name="password" 
+            placeholder="Password" 
+            value={agentData.password} 
+            onChange={handleAgentChange} 
+            required 
+          />
+          <div className="btnRow">
+            <button type="button" className="cancelBtn" onClick={() => setShowAddAgent(false)}>Cancel</button>
+            <button type="submit" className="submitBtn">Add Agent</button>
+          </div>
+        </form>
+      </div>
+    )}
+
     </div>
   );
 }
